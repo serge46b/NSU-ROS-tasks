@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "practice_id": "PR01",
+  "commit": "453629b461a2e3ef76f7f36c4b3d81eb20d1bccc",
+  "course_kit": {
+    "version": "v1-w02",
+    "archive_sha256": "5d210c431e32418f45e2cffa9dd2028116c7a9520a36f3c7079c778cd73437a8"
+  },
+  "commands": [
+    "source /opt/ros/jazzy/setup.bash",
+    "export ROS_DOMAIN_ID=16",
+    "ros2 doctor --report",
+    "ros2 run turtlesim turtlesim_node",
+    "ros2 run turtlesim turtle_teleop_key",
+    "ros2 node list --no-daemon --spin-time 2",
+    "ros2 topic list -t",
+    "ros2 node info /turtlesim",
+    "ros2 topic type /turtle1/pose",
+    "ros2 topic echo /turtle1/pose --once",
+    "timeout 15s ros2 topic hz /turtle1/pose",
+    "export ROS_DOMAIN_ID=17",
+    "timeout 5s ros2 topic echo /turtle1/pose turtlesim/msg/Pose --once",
+    "export ROS_DOMAIN_ID=16",
+    "python3 -m json.tool evidence/pr01/environment.json",
+    "python3 .course-kit/v1/tools/check_practice.py PR01 --submission ."
+  ],
+  "tests": [
+    {
+      "name": "working graph: node list shows /turtlesim and /teleop_turtle",
+      "status": "passed"
+    },
+    {
+      "name": "topic type /turtle1/pose is turtlesim/msg/Pose",
+      "status": "passed"
+    },
+    {
+      "name": "topic hz /turtle1/pose about 62.5 Hz for 15 s",
+      "status": "passed"
+    },
+    {
+      "name": "domain 17: pose echo times out with exit 124",
+      "status": "passed"
+    },
+    {
+      "name": "domain 16 restored: pose echo returns exit 0",
+      "status": "passed"
+    }
+  ],
+  "defect": {
+    "reproducer": "Симулятор остаётся в ROS_DOMAIN_ID=16. Teleop и CLI перезапускаются с ROS_DOMAIN_ID=17. Команда: timeout 5s ros2 topic echo /turtle1/pose turtlesim/msg/Pose --once. Симптом: в node list только /teleop_turtle, файл pose-broken.txt пустой, exit=124, стрелки не двигают черепаху.",
+    "root_cause": "ROS_DOMAIN_ID задаёт DDS-область обнаружения в момент старта ноды. export не переносит уже работающий turtlesim в другой домен, поэтому подписчик и teleop в домене 17 не видят издателя позы в домене 16.",
+    "proof_after": "Teleop и CLI перезапущены с ROS_DOMAIN_ID=16, симулятор не трогали. Та же команда timeout 5s ros2 topic echo /turtle1/pose turtlesim/msg/Pose --once записала позу в pose-fixed.txt и вернула exit=0. node list снова показывает /teleop_turtle и /turtlesim, стрелки управляют черепахой."
+  },
+  "claims": {
+    "public_tests_passed": true,
+    "defect_reproduced": true,
+    "defect_fixed": true
+  },
+  "time": {
+    "contact_academic_hours": 2,
+    "self_study_hours": 2
+  },
+  "ai_used": true
+}

@@ -1,0 +1,24 @@
+{
+  "launch_method": "wsl2",
+  "os": {
+    "pretty_name": "Ubuntu 24.04.5 LTS",
+    "name": "Ubuntu",
+    "version_id": "24.04",
+    "version_codename": "noble",
+    "kernel": "6.18.33.2-microsoft-standard-WSL2",
+    "arch": "x86_64"
+  },
+  "ros": {
+    "distro": "jazzy",
+    "rmw": "rmw_fastrtps_cpp"
+  },
+  "gazebo": {
+    "command": "gz sim --versions",
+    "installed": false,
+    "note": "command not found; Gazebo packages are not installed in this WSL image. PR01 uses turtlesim only."
+  },
+  "domains": {
+    "working": 16,
+    "broken": 17
+  }
+}
