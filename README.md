@@ -1,103 +1,89 @@
-# ПР01. Окружение и граф ROS 2
+# ПР02. Терминал, пакет и запуск turtlesim
 
-Личный репозиторий курса. На этой неделе запускаются готовые ноды `turtlesim`,
-описывается граф и проверяется изоляция `ROS_DOMAIN_ID`.
+Личный репозиторий курса. Пакет `turtle_bringup` собирает установленный
+`turtlesim` через `sim.launch.py`. Своей ноды нет: команда движения
+отправляется CLI.
 
-Среда: WSL2, Ubuntu 24.04, ROS 2 Jazzy. Выделенная пара доменов: **16** (рабочий)
-и **17** (разрыв связи).
+Среда: WSL2, Ubuntu 24.04, ROS 2 Jazzy. Рабочий домен: **16**.
 
-## Подготовка терминалов
+## Подготовка
 
-Откройте три Bash-терминала в одной WSL-среде. В каждом:
+В каждом терминале:
 
 ```bash
 source /opt/ros/jazzy/setup.bash
+source install/setup.bash
 export ROS_DOMAIN_ID=16
+cd "$(git rev-parse --show-toplevel)"
 ```
 
 Остановите прежние `turtlesim` / `turtle_teleop_key` через `Ctrl+C`.
 
-В терминале C, из корня репозитория:
+## Сборка
+
+Из корня репозитория, только с базовой ROS (`source /opt/ros/jazzy/setup.bash`):
 
 ```bash
-mkdir -p evidence/pr01
-ros2 doctor --report > evidence/pr01/doctor.txt 2>&1
+colcon build --symlink-install --packages-select turtle_bringup
 ```
 
-## Исправный граф
+После сборки в новом терминале `ros2 pkg prefix turtle_bringup` должен
+указывать в `install/` этого workspace.
 
-Терминал A (занимает терминал до `Ctrl+C`):
+## Запуск
+
+Терминал A:
 
 ```bash
-ros2 run turtlesim turtlesim_node
+ros2 launch turtle_bringup sim.launch.py
 ```
 
-Терминал B:
-
-```bash
-ros2 run turtlesim turtle_teleop_key
-```
-
-Стрелки работают, пока фокус в терминале B. Терминал C:
+Должно открыться одно окно. Проверка графа в другом терминале:
 
 ```bash
 ros2 node list --no-daemon --spin-time 2
-ros2 topic list -t
-ros2 node info /turtlesim
-ros2 topic type /turtle1/pose
-POSE_TYPE=$(ros2 topic type /turtle1/pose)
+```
+
+`Ctrl+C` в A завершает launch и запущенный им turtlesim.
+
+## Команда движения
+
+Teleop должен быть остановлен. Поза до команды, затем одна публикация:
+
+```bash
 ros2 topic echo /turtle1/pose --once
-ros2 topic hz /turtle1/pose
+ros2 topic pub --once /turtle1/cmd_vel geometry_msgs/msg/Twist \
+  '{linear: {x: 1.0}, angular: {z: 0.5}}'
+ros2 topic echo /turtle1/pose --once
 ```
 
-Последнюю команду держите не меньше 10 секунд и завершите `Ctrl+C`. Поза
-публикуется и у неподвижной черепахи. Тип на Jazzy: `turtlesim/msg/Pose`.
-Команда движения приходит в `/turtle1/cmd_vel`.
+Одна публикация не задаёт бесконечное движение.
 
-Наблюдения сводятся в `evidence/pr01/graph.md`.
+## Сбой имени топика
 
-## Разрыв и восстановление связи
-
-Симулятор в терминале A всё время работает в домене 16.
-
-В терминале B остановите teleop и запустите его в другом домене:
+Издатель с тем же Twist, но другим именем:
 
 ```bash
-export ROS_DOMAIN_ID=17
-ros2 run turtlesim turtle_teleop_key
+ros2 topic pub --rate 1 --wait-matching-subscriptions 0 \
+  /cmd_vel geometry_msgs/msg/Twist \
+  '{linear: {x: 1.0}, angular: {z: 0.5}}'
 ```
 
-Стрелки больше не управляют черепахой. В терминале C:
+Пока он работает:
 
 ```bash
-export ROS_DOMAIN_ID=17
-ros2 node list --no-daemon --spin-time 2
-timeout 5s ros2 topic echo /turtle1/pose "$POSE_TYPE" --once > evidence/pr01/pose-broken.txt 2>&1
-printf 'exit=%s\n' "$?"
+ros2 topic info /cmd_vel --verbose
+ros2 topic info /turtle1/cmd_vel --verbose
 ```
 
-Ожидается `/teleop_turtle` без `/turtlesim`, поза не приходит, `exit=124`.
-
-Затем в B остановите teleop, верните `ROS_DOMAIN_ID=16` и запустите снова.
-В C повторите тот же тест:
-
-```bash
-export ROS_DOMAIN_ID=16
-ros2 node list --no-daemon --spin-time 2
-timeout 5s ros2 topic echo /turtle1/pose "$POSE_TYPE" --once > evidence/pr01/pose-fixed.txt 2>&1
-printf 'exit=%s\n' "$?"
-```
-
-Обе ноды видны, приходит поза, `exit=0`, стрелки снова двигают черепаху.
-
-`export` не перенастраивает уже запущенную ноду: симулятор и установку ROS
-менять не нужно, достаточно перезапустить teleop и CLI в исходном домене.
+На `/cmd_vel` есть издатель и нет подписчика turtlesim. После замены только
+имени на `/turtle1/cmd_vel` команда снова доходит до черепахи.
 
 ## Проверка отчёта
 
 ```bash
-python3 -m json.tool evidence/pr01/environment.json > /dev/null
-python3 .course-kit/v1/tools/check_practice.py PR01 --submission .
+python3 -m py_compile src/turtle_bringup/launch/sim.launch.py
+python3 .course-kit/v1/tools/check_practice.py PR02 --submission .
 ```
 
 Course kit: ревизия `v1-w02`, SHA-256 архива
