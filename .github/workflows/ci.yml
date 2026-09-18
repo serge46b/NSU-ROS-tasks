@@ -20,10 +20,12 @@ jobs:
       - name: Download course kit
         shell: bash
         run: |
-          curl -fsSLo course-kit.tar.gz "$COURSE_KIT_URL"
-          printf '%s  %s\n' "$COURSE_KIT_SHA256" course-kit.tar.gz | sha256sum -c -
+          curl -fsSLo /tmp/course-kit.tar.gz "$COURSE_KIT_URL"
+          printf '%s  %s\n' "$COURSE_KIT_SHA256" /tmp/course-kit.tar.gz | sha256sum -c -
           mkdir -p .course-kit
-          tar -xzf course-kit.tar.gz -C .course-kit
+          tar -xzf /tmp/course-kit.tar.gz -C .course-kit
       - name: Check PR evidence
         shell: bash
-        run: python3 .course-kit/v1/tools/check_practice.py PR01 --submission .
+        run: |
+          git restore --worktree --source=HEAD -- .
+          python3 .course-kit/v1/tools/check_practice.py PR01 --submission .
