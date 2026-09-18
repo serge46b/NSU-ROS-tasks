@@ -37,7 +37,11 @@ jobs:
       - name: Download course kit
         shell: bash
         run: |
-          curl -fsSLo /tmp/course-kit.tar.gz "$COURSE_KIT_URL"
+          set -euo pipefail
+          if ! curl --retry 5 --retry-delay 2 --retry-all-errors --http1.1 -4 \
+            -fsSLo /tmp/course-kit.tar.gz "$COURSE_KIT_URL"; then
+            python3 -c 'import os, urllib.request; urllib.request.urlretrieve(os.environ["COURSE_KIT_URL"], "/tmp/course-kit.tar.gz")'
+          fi
           printf '%s  %s\n' "$COURSE_KIT_SHA256" /tmp/course-kit.tar.gz | sha256sum -c -
           mkdir -p /tmp/course-kit
           tar -xzf /tmp/course-kit.tar.gz -C /tmp/course-kit
