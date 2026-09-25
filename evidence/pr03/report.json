@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "practice_id": "PR03",
+  "commit": "c2ee5a1446d6b70a2305ad5b68b78aa3e5a89a6a",
+  "course_kit": {
+    "version": "v1-w03",
+    "archive_sha256": "7fbfd3e8161ab6c6ebefc7663efdaf77d9a7d490399743507f33dcefbd5ac522"
+  },
+  "commands": [
+    "source /opt/ros/jazzy/setup.bash",
+    "export ROS_DOMAIN_ID=16",
+    "ros2 pkg create --build-type ament_python --license Apache-2.0 --node-name patrol patrol --dependencies rclpy geometry_msgs",
+    "colcon build --symlink-install --packages-select patrol",
+    "source install/setup.bash",
+    "python3 -m pytest src/patrol/test",
+    "colcon test --event-handlers console_direct+ --packages-select patrol turtle_bringup",
+    "colcon test-result --verbose",
+    "ros2 launch turtle_bringup sim.launch.py",
+    "ros2 topic type /turtle1/pose",
+    "ros2 run patrol patrol",
+    "ros2 node list --no-daemon --spin-time 2",
+    "ros2 topic info /cmd_vel --verbose",
+    "ros2 topic info /turtle1/cmd_vel --verbose",
+    "ros2 topic echo /turtle1/pose --once",
+    "ros2 run patrol patrol --ros-args -r cmd_vel:=/turtle1/cmd_vel",
+    "ros2 node info /patrol",
+    "ros2 topic echo /turtle1/cmd_vel --once",
+    "timeout 10s ros2 topic hz /turtle1/cmd_vel",
+    "python3 .course-kit/v1/tools/check_practice.py PR03 --submission ."
+  ],
+  "tests": [
+    {
+      "name": "command_from_pose(None) is a zero command",
+      "status": "passed"
+    },
+    {
+      "name": "a turtlesim Pose message requests linear.x 0.5 and angular.z 0.3",
+      "status": "passed"
+    },
+    {
+      "name": "limited_command keeps in-range sign and clamps overspeed",
+      "status": "passed"
+    },
+    {
+      "name": "colcon test patrol and turtle_bringup",
+      "status": "passed"
+    },
+    {
+      "name": "without remap, /cmd_vel has publisher patrol and no subscriber; pose stays at spawn",
+      "status": "passed"
+    },
+    {
+      "name": "remap cmd_vel to /turtle1/cmd_vel connects patrol to turtlesim at about 10 Hz",
+      "status": "passed"
+    }
+  ],
+  "defect": {
+    "reproducer": "Запущен turtlesim через turtle_bringup и ros2 run patrol patrol без remap. Симптом: ros2 topic info /cmd_vel --verbose показывает Publisher count 1 (нода patrol) и Subscription count 0; /turtle1/cmd_vel имеет подписчика turtlesim и 0 издателей. Поза через 2 с остаётся стартовой x=5.544444561004639, y=5.544444561004639, скорости 0.",
+    "root_cause": "Издатель создан с относительным именем cmd_vel. У ноды /patrol пространство имён /, поэтому полное имя /cmd_vel. turtlesim подписан на другое полное имя /turtle1/cmd_vel. Тип Twist совпадает, но DDS сопоставляет конечные точки по полному имени вместе с типом, поэтому команда не доставляется.",
+    "proof_after": "Тот же пакет запущен как ros2 run patrol patrol --ros-args -r cmd_vel:=/turtle1/cmd_vel. ros2 node info /patrol показывает издателя /turtle1/cmd_vel; topic info этого топика — издатель patrol и подписчик turtlesim. Сообщение linear.x=0.5, angular.z=0.3; поза меняется, linear_velocity=0.5, angular_velocity=0.3. timeout 10s ros2 topic hz /turtle1/cmd_vel даёт average rate около 9.999–10.003 Гц (exit 124 из-за timeout)."
+  },
+  "claims": {
+    "public_tests_passed": true,
+    "defect_reproduced": true,
+    "defect_fixed": true
+  },
+  "time": {
+    "contact_academic_hours": 2,
+    "self_study_hours": 2
+  },
+  "ai_used": true
+}

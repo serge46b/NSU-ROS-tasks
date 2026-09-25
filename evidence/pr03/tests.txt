@@ -1,0 +1,22 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-7.4.4, pluggy-1.4.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /mnt/e/education/NSU/Robotics/NSU-ROS-tasks/src/patrol
+plugins: ament-xmllint-0.17.5, ament-copyright-0.17.5, launch-testing-ros-0.26.12, ament-flake8-0.17.5, ament-lint-0.17.5, launch-testing-3.4.11, ament-pep257-0.17.5, cov-4.1.0, colcon-core-0.21.1
+collecting ... collected 8 items
+
+src/patrol/test/test_command.py::test_missing_pose_is_zero_command PASSED [ 12%]
+src/patrol/test/test_command.py::test_pose_message_requests_constant_motion PASSED [ 25%]
+src/patrol/test/test_command.py::test_zero_command_stays_zero PASSED     [ 37%]
+src/patrol/test/test_command.py::test_in_range_command_keeps_sign_and_magnitude PASSED [ 50%]
+src/patrol/test/test_command.py::test_command_is_clamped_without_flipping_sign PASSED [ 62%]
+src/patrol/test/test_copyright.py::test_copyright SKIPPED (No copyri...) [ 75%]
+src/patrol/test/test_flake8.py::test_flake8 PASSED                       [ 87%]
+src/patrol/test/test_pep257.py::test_pep257 PASSED                       [100%]
+
+=============================== warnings summary ===============================
+test/test_flake8.py: 16 warnings
+  Warning: This process (pid=2302) is multi-threaded, use of fork() may lead to deadlocks in the child.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================== 7 passed, 1 skipped, 16 warnings in 13.76s ==================
