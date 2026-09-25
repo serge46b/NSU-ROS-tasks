@@ -1,8 +1,8 @@
-# ПР02. Терминал, пакет и запуск turtlesim
+# ПР03. Нода patrol: поза и команда
 
-Личный репозиторий курса. Пакет `turtle_bringup` собирает установленный
-`turtlesim` через `sim.launch.py`. Своей ноды нет: команда движения
-отправляется CLI.
+Личный репозиторий курса. Пакет `turtle_bringup` по-прежнему только запускает
+`turtlesim`. Своя нода — пакет `patrol`: подписка на `/turtle1/pose` и таймер,
+который публикует `geometry_msgs/msg/Twist` в относительный `cmd_vel`.
 
 Среда: WSL2, Ubuntu 24.04, ROS 2 Jazzy. Рабочий домен: **16**.
 
@@ -17,18 +17,19 @@ export ROS_DOMAIN_ID=16
 cd "$(git rev-parse --show-toplevel)"
 ```
 
-Остановите прежние `turtlesim` / `turtle_teleop_key` через `Ctrl+C`.
+Остановите прежние `turtlesim`, `turtle_teleop_key` и `patrol` через `Ctrl+C`.
 
-## Сборка
-
-Из корня репозитория, только с базовой ROS (`source /opt/ros/jazzy/setup.bash`):
+## Сборка и тесты команды
 
 ```bash
-colcon build --symlink-install --packages-select turtle_bringup
+colcon build --symlink-install --packages-select patrol
+source install/setup.bash
+python3 -m pytest src/patrol/test
 ```
 
-После сборки в новом терминале `ros2 pkg prefix turtle_bringup` должен
-указывать в `install/` этого workspace.
+Чистая функция без позы даёт нулевой Twist. Обычное сообщение `turtlesim/msg/Pose`
+даёт `linear.x = 0.5` и `angular.z = 0.3`. Слишком большие значения обрезаются
+до `±1`, знак сохраняется.
 
 ## Запуск
 
@@ -38,53 +39,35 @@ colcon build --symlink-install --packages-select turtle_bringup
 ros2 launch turtle_bringup sim.launch.py
 ```
 
-Должно открыться одно окно. Проверка графа в другом терминале:
+Терминал B, без remap — публикация идёт в `/cmd_vel`, turtlesim её не читает:
 
 ```bash
-ros2 node list --no-daemon --spin-time 2
+ros2 run patrol patrol
 ```
 
-`Ctrl+C` в A завершает launch и запущенный им turtlesim.
-
-## Команда движения
-
-Teleop должен быть остановлен. Поза до команды, затем одна публикация:
+Тот же процесс с исправлением имени при запуске:
 
 ```bash
-ros2 topic echo /turtle1/pose --once
-ros2 topic pub --once /turtle1/cmd_vel geometry_msgs/msg/Twist \
-  '{linear: {x: 1.0}, angular: {z: 0.5}}'
-ros2 topic echo /turtle1/pose --once
+ros2 run patrol patrol --ros-args -r cmd_vel:=/turtle1/cmd_vel
 ```
 
-Одна публикация не задаёт бесконечное движение.
-
-## Сбой имени топика
-
-Издатель с тем же Twist, но другим именем:
+Пока нода работает, в третьем терминале:
 
 ```bash
-ros2 topic pub --rate 1 --wait-matching-subscriptions 0 \
-  /cmd_vel geometry_msgs/msg/Twist \
-  '{linear: {x: 1.0}, angular: {z: 0.5}}'
-```
-
-Пока он работает:
-
-```bash
-ros2 topic info /cmd_vel --verbose
+ros2 node info /patrol
 ros2 topic info /turtle1/cmd_vel --verbose
+timeout 10s ros2 topic hz /turtle1/cmd_vel
 ```
 
-На `/cmd_vel` есть издатель и нет подписчика turtlesim. После замены только
-имени на `/turtle1/cmd_vel` команда снова доходит до черепахи.
+`Ctrl+C` останавливает `spin`. Нода при этом не публикует нулевую команду:
+turtlesim ещё короткое время исполняет последний Twist и останавливается сам.
+Исчезновение процесса — не мгновенное торможение.
 
 ## Проверка отчёта
 
 ```bash
-python3 -m py_compile src/turtle_bringup/launch/sim.launch.py
-python3 .course-kit/v1/tools/check_practice.py PR02 --submission .
+python3 .course-kit/v1/tools/check_practice.py PR03 --submission .
 ```
 
-Course kit: ревизия `v1-w02`, SHA-256 архива
-`5d210c431e32418f45e2cffa9dd2028116c7a9520a36f3c7079c778cd73437a8`.
+Course kit: ревизия `v1-w03`, SHA-256 архива
+`7fbfd3e8161ab6c6ebefc7663efdaf77d9a7d490399743507f33dcefbd5ac522`.
