@@ -20,10 +20,10 @@ Double value is: 10.0
 `timeout 10s ros2 topic hz /turtle1/cmd_vel` при 10 Гц:
 
 ```
-average rate: 10.011
-	min: 0.098s max: 0.101s std dev: 0.00053s window: 11
-average rate: 10.007
-	min: 0.098s max: 0.102s std dev: 0.00058s window: 22
+average rate: 10.000
+	min: 0.099s max: 0.101s std dev: 0.00020s window: 126
+average rate: 10.000
+	min: 0.098s max: 0.102s std dev: 0.00030s window: 167
 ```
 
 Допустимая смена частоты:
@@ -37,8 +37,8 @@ Set parameter successful
 После последующего отказа нуля поток держался около 5 Гц:
 
 ```
-average rate: 5.002
-	min: 0.199s max: 0.200s std dev: 0.00046s window: 6
+average rate: 5.000
+	min: 0.199s max: 0.201s std dev: 0.00030s window: 85
 ```
 
 Нулевая частота отклонена, значение не изменилось:
