@@ -79,13 +79,15 @@ $ ros2 action list -t
 
 ## Дефект: проверка частоты отключена
 
-Временно `validate_values` принимал любое число, включая 0. Тот же
-`publish_hz=0.0` дошёл до `apply`, где период считается как `1.0 / publish_hz`:
+Временно проверка частоты была снята, и живой `ros2 param set /patrol publish_hz 0.0`
+дошёл до `apply`. Период таймера считается как `1.0 / publish_hz`:
 
 ```
 ZeroDivisionError: float division by zero
-DEFECT_REPRODUCED
+[ros2run]: Process exited with failure 1
 ```
 
-После возврата проверки тот же `ros2 param set /patrol publish_hz 0.0`
-отклоняется, параметр остаётся 5.0, поток ~5 Гц продолжается.
+Нода `/patrol` исчезла из графа, остался `/turtlesim`. После возврата проверки
+тот же `ros2 param set /patrol publish_hz 0.0` печатает
+`Setting parameter failed: publish_hz must be between 1.0 and 30.0 Hz`.
+Значение и поток сохраняются.

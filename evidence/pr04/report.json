@@ -53,7 +53,7 @@
     }
   ],
   "defect": {
-    "reproducer": "Проверка частоты временно отключена: validate_values принимает любое число. node.set_parameters_atomically([Parameter('publish_hz', 0.0)]) доходит до apply. Симптом: ZeroDivisionError: float division by zero в 1.0 / self.publish_hz; нода падает, поток команд обрывается.",
+    "reproducer": "Проверка частоты временно отключена. Команда: ros2 param set /patrol publish_hz 0.0. Симптом: в терминале ноды ZeroDivisionError: float division by zero в apply при 1.0 / self.publish_hz; [ros2run]: Process exited with failure 1; /patrol исчезает из графа.",
     "root_cause": "Нуль принят как publish_hz. post-set пересоздаёт таймер через период 1/publish_hz. Для нуля это деление на ноль, активное состояние разрушается вместо отклонения запроса.",
     "proof_after": "Проверка возвращена. Тот же ros2 param set /patrol publish_hz 0.0 печатает Setting parameter failed: publish_hz must be between 1.0 and 30.0 Hz. ros2 param get остаётся 5.0; timeout 10s ros2 topic hz /turtle1/cmd_vel даёт average rate около 5.002 Гц. Тест ноды: set_parameters_atomically(0.0) unsuccessful и node.timer is old_timer."
   },
