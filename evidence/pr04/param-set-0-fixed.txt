@@ -1,0 +1,2 @@
+Setting parameter failed: publish_hz must be between 1.0 and 30.0 Hz
+rc:0

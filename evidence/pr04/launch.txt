@@ -1,0 +1,6 @@
+[INFO] [launch]: All log files can be found below /home/serge/.ros/log/2026-10-15-06-37-13-938112-Expert46-445
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [turtlesim_node-1]: process started with pid [455]
+[turtlesim_node-1] [INFO] [1792021034.304893611] [turtlesim]: Starting turtlesim with node name /turtlesim
+[turtlesim_node-1] [INFO] [1792021034.316133255] [turtlesim]: Spawning turtle [turtle1] at x=[5.544445], y=[5.544445], theta=[0.000000]
+[turtlesim_node-1] [INFO] [1792021138.528238479] [turtlesim]: Clearing turtlesim.

@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "/mnt/e/education/NSU/Robotics/NSU-ROS-tasks/reproduce_defect.py", line 20, in <module>
+    result = node.set_parameters_atomically([
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 839, in set_parameters_atomically
+    return self._set_parameters_atomically(parameter_list)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 859, in _set_parameters_atomically
+    return self._set_parameters_atomically_common(parameter_list)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 962, in _set_parameters_atomically_common
+    self._call_post_set_parameters_callback(parameter_list)
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1055, in _call_post_set_parameters_callback
+    callback(parameter_list)
+  File "/mnt/e/education/NSU/Robotics/NSU-ROS-tasks/build/patrol/patrol/patrol.py", line 127, in apply
+    1.0 / self.publish_hz, self.on_timer)
+    ~~~~^~~~~~~~~~~~~~~~~
+ZeroDivisionError: float division by zero
+DEFECT_REPRODUCED

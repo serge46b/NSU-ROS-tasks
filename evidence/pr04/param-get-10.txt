@@ -1,0 +1,2 @@
+Double value is: 10.0
+rc:0

@@ -18,5 +18,14 @@
 - Характер помощи: нода с подпиской и таймером, чистые тесты команды, съёмка графа до и после remap, оформление evidence и CI по условию ПР03
 - Как результат был проверен независимо: `colcon build`, `python3 -m pytest src/patrol/test`, `colcon test` пакетов `patrol` и `turtle_bringup`, живой `ros2 launch` и `ros2 run patrol` без remap и с `-r cmd_vel:=/turtle1/cmd_vel`, `topic info`, `topic echo` и `timeout 10s ros2 topic hz`, `check_practice.py PR03`
 
+## PR04
+
+- Использован ИИ: да (`ai_used: true` в отчёте этой ПР).
+- Модель и версия: Cursor Grok 4.6
+- Среда или интерфейс агента: Cursor Agent, репозиторий NSU-ROS-tasks, ROS 2 Jazzy в WSL2
+- Затронутые компоненты: `src/patrol/`, README, `.github/workflows/ci.yml`, `evidence/pr04/*`, `AI_USAGE.md`
+- Характер помощи: параметры `publish_hz`/`linear_speed`/`turn_rate` на той же ноде ПР03, проверка до смены таймера, чистые тесты, съёмка `param set`/`topic hz`/`/clear`/`action list`, оформление evidence и CI по условию ПР04
+- Как результат был проверен независимо: `colcon build`, `python3 -m pytest src/patrol/test`, `colcon test` пакетов `patrol` и `turtle_bringup`, живой `ros2 launch` и `ros2 run patrol` с remap, `param get/set`, `topic hz` на 10 Гц и 5 Гц, отказ `publish_hz=0.0`, `service call /clear`, `action list -t`, воспроизведение `ZeroDivisionError` с отключённой проверкой, `check_practice.py PR04`
+
 Полные чаты и личные промпты не прикладываются. Не включайте ключи, секреты,
 персональные данные и hidden tests.

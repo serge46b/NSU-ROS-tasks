@@ -1,0 +1,44 @@
+    PID COMMAND
+      1 /sbin/init
+      2 /init
+      9 plan9 --control-socket 7 --log-level 4 --server-fd 8 --pipe-fd 10 --log-truncate
+     45 /usr/lib/systemd/systemd-journald
+     97 /usr/lib/systemd/systemd-udevd
+    112 /usr/lib/systemd/systemd-resolved
+    113 /usr/lib/systemd/systemd-timesyncd
+    181 avahi-daemon: running [Expert46-2.local]
+    182 /usr/sbin/cron -f -P
+    183 @dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only
+    187 /usr/bin/lttng-sessiond
+    188 /usr/lib/polkit-1/polkitd --no-debug
+    192 /usr/lib/systemd/systemd-logind
+    193 /usr/libexec/wsl-pro-service
+    195 avahi-daemon: chroot helper
+    200 /usr/sbin/rsyslogd -n -iNONE
+    203 /usr/sbin/wpa_supplicant -u -s -O DIR=/run/wpa_supplicant GROUP=netdev
+    206 /usr/bin/lttng-sessiond
+    232 /usr/bin/python3 /usr/share/unattended-upgrades/unattended-upgrade-shutdown --wait-for-signal
+    261 /sbin/agetty -o -p -- \u --noclear - linux
+    270 nginx: master process /usr/sbin/nginx -g daemon on; master_process on;
+    271 nginx: worker process
+    354 /bin/login -f
+    387 /usr/lib/systemd/systemd --user
+    390 (sd-pam)
+    412 -bash
+    559 /usr/bin/dbus-daemon --session --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only
+    579 /init
+    580 /init
+    586 bash /mnt/e/education/NSU/Robotics/NSU-ROS-tasks/evidence/pr04/capture_live.sh
+    820 /usr/bin/python3 /opt/ros/jazzy/bin/ros2 param set /patrol publish_hz 5.0
+   1201 /init
+   1202 /init
+   1203 bash collect_pr04.sh
+   1238 /opt/ros/jazzy/lib/turtlesim/turtlesim_node --ros-args
+   1257 /usr/bin/python3 -c from ros2cli.daemon.daemonize import main; main() --name ros2-daemon --ros-domain-id 16 --rmw-implementation rmw_fastrtps_cpp
+   1276 /usr/bin/python3 /mnt/e/education/NSU/Robotics/NSU-ROS-tasks/install/patrol/lib/patrol/patrol --ros-args -r cmd_vel:=/turtle1/cmd_vel
+   1590 /init
+   1591 /init
+   1595 bash /mnt/e/education/NSU/Robotics/NSU-ROS-tasks/evidence/pr04/continue_live.sh
+   1619 python3 -
+   1620 sleep 1
+   1621 ps -eo pid,args

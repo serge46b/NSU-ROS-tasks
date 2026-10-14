@@ -1,0 +1,1 @@
+hz_after_zero_exit=0
